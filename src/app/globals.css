@@ -121,10 +121,27 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Drag-and-Drop Visual Enhancements
+   ═══════════════════════════════════════════════════════ */
+
+/* Placeholder slot animation — the gap where a card will land */
+[data-rfd-placeholder-context-id] {
+  transition: height 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Prevent text selection on the entire page during drag */
+body.is-dragging {
+  user-select: none;
+  -webkit-user-select: none;
 }

@@ -73,8 +73,16 @@ export function KanbanColumn({
     setTitle(column.title);
   }
 
+  const isDragActive = activeCardId !== null;
+
   return (
-    <div className="flex w-[300px] flex-shrink-0 flex-col rounded-2xl border border-white/[0.06] bg-slate-900/50 backdrop-blur-sm sm:w-[320px]">
+    <div
+      className={cn(
+        "flex w-[300px] flex-shrink-0 flex-col rounded-2xl border bg-slate-900/90 sm:w-[320px]",
+        "border-white/[0.06]",
+        "transition-[border-color,background-color] duration-300 ease-out"
+      )}
+    >
       {/* Column Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -131,16 +139,44 @@ export function KanbanColumn({
         </DropdownMenu>
       </div>
 
-      {/* Droppable Cards Area */}
+      {/* ═══════════════════════════════════════════════════════
+          DROPPABLE ZONE — The cards area that receives drops
+          ═══════════════════════════════════════════════════════ */}
       <Droppable droppableId={column.id}>
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
             className={cn(
-              "flex min-h-[60px] flex-1 flex-col gap-2 px-3 pb-2 transition-colors duration-200",
-              snapshot.isDraggingOver &&
-                "rounded-xl bg-indigo-500/[0.04] ring-1 ring-inset ring-indigo-500/10"
+              // Base card list area
+              "flex min-h-[80px] flex-1 flex-col gap-2 rounded-xl px-3 pb-3 pt-1",
+              // Smooth transition for the drop zone effect
+              "transition-all duration-300 ease-out",
+              // Subtle inset border for structure
+              "mx-1 mb-1",
+
+              // ── Idle state when a drag is happening elsewhere ──
+              isDragActive &&
+              !snapshot.isDraggingOver &&
+              "border border-dashed border-transparent",
+
+              // ══════════════════════════════════════════════════
+              // DRAGGING OVER — Card is hovering over this column
+              // Vivid "drop here" feedback
+              // ══════════════════════════════════════════════════
+              snapshot.isDraggingOver && [
+                "bg-indigo-500/[0.06]",
+                "border border-dashed border-indigo-400/30",
+                "shadow-[inset_0_2px_12px_-4px_rgba(99,102,241,0.15)]",
+              ],
+
+              // When drag is active but NOT over this column,
+              // show a subtle ready-to-receive hint
+              isDragActive &&
+              !snapshot.isDraggingOver && [
+                "border-slate-500/10",
+                "bg-white/[0.01]",
+              ]
             )}
           >
             {column.cards.map((card, index) => (
@@ -150,7 +186,7 @@ export function KanbanColumn({
                     card={card}
                     boardId={boardId}
                     provided={dragProvided}
-                    isDragging={dragSnapshot.isDragging}
+                    snapshot={dragSnapshot}
                     isOtherDragging={
                       activeCardId !== null && activeCardId !== card.id
                     }

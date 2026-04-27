@@ -29,11 +29,14 @@ export function KanbanBoard({ board }: KanbanBoardProps) {
 
   const handleDragStart = useCallback((start: DragStart) => {
     setActiveCardId(start.draggableId);
+    // Add body class to prevent text selection during drag
+    document.body.classList.add("is-dragging");
   }, []);
 
   const handleDragEnd = useCallback(
     (result: DropResult) => {
       setActiveCardId(null);
+      document.body.classList.remove("is-dragging");
 
       const { source, destination, draggableId } = result;
 
